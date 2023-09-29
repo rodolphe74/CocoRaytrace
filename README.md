@@ -7,7 +7,7 @@ Porting of a simple raytracer on a Tandy Coco 3
 # How to build
 - Install [CMOC](http://perso.b2b2c.ca/~sarrazip/dev/cmoc.html)
 - Adapt [COCOMakefile](./COCOMakefile)
-- Make -f COCOMakefile run
+- make -f COCOMakefile run
 
 # Now you are on the COCO side ([XRoar](https://www.6809.org.uk/xroar/))
 - LOADM "BGRAY"
