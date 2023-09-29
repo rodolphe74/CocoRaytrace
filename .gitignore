@@ -1,6 +1,6 @@
 apidocs
 .kdev4
-.vscode
+.vscode/
 .cache
 build
 *~
