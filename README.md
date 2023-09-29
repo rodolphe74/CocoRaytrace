@@ -1,6 +1,6 @@
 # CocoRaytrace
 
-Porting of a [simple raytracer](https://www.google.com/search?client=firefox-b-d&q=Simple-Raytracer-in-C) on a Tandy Coco 3
+Porting of a [simple raytracer](https://github.com/WyattAutomation/Simple-Raytracer-in-C) on a Tandy Coco 3
 
 <img src="CocoRT.png">
 
