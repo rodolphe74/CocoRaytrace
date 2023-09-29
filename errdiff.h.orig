@@ -1,0 +1,52 @@
+#ifndef ERRDIFF_H
+#define ERRDIFF_H
+    #include "type.h"
+    #include "bgraph-0.1.7/cc4graph.h"
+
+
+color_t palette[] = {
+	{2,2,2},
+	{74,2,0},
+	{74,74,172},
+	{74,74,74},
+	{172,74,2},
+	{74,172,2},
+	{253,74,2},
+	{172,172,172},
+	{2,172,253},
+	{235,172,74},
+	{74,172,172},
+	{74,253,74},
+	{253,172,2},
+	{2,253,253},
+	{172,172,2},
+	{253,253,253}
+};
+
+int findNearestColor(color_t c);
+
+
+    static FLOATING FS_STANDARD[] = {
+    4,
+    1, 0,  7.0 / 16,
+    -1, 1,  3.0 / 16,
+    0, 1,  5.0 / 16,
+    1, 1,  1.0 / 16,
+    0
+};
+
+struct FLOYD_MATRIX_STRUCT {
+    char name[64];
+    FLOATING *matrix;
+};
+typedef struct FLOYD_MATRIX_STRUCT FLOYD_MATRIX;
+
+static int FLOYD_MATRIX_COUNT = 1;
+
+static FLOYD_MATRIX floyd_matrix[] = {
+    { .name = "Standard", .matrix = FS_STANDARD },
+};
+
+void errorDiffusiongDither(GraphicsDriver *gd, const FLOYD_MATRIX *f_mat);
+
+#endif

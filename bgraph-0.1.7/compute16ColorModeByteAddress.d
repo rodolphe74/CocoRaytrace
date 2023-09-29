@@ -1,0 +1,1 @@
+compute16ColorModeByteAddress.o compute16ColorModeByteAddress.d : compute16ColorModeByteAddress.c bgraph_private.h Primitive.h
