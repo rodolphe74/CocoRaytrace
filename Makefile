@@ -6,5 +6,9 @@ raymake: vector.c plane.c sphere.c light.c ray.c
 run:
 	./a.out > a.out.log
 
+clean:
+	rm a.out
+	rm a.out.log
+
 convert:
-	magick test1.ppm test1.jpg 
+	magick test1.ppm test1.png

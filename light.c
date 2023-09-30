@@ -32,7 +32,7 @@ color_t pln_lighting(light_t *light, ray_t *ray, xpnt_t *plnx)
 
     //vectors for normal, N
     PV_t normv = vec_scale(T, &V);
-    PV_t normorg = vec_sum(&ray->or, &normv);
+    PV_t normorg = vec_sum(&ray-> or, &normv);
 
     /*normalized vector N (difference
     of plane point and norm origin)*/
@@ -40,7 +40,7 @@ color_t pln_lighting(light_t *light, ray_t *ray, xpnt_t *plnx)
 
     //normalize the Normal
     FLOATING tp = vec_dot(&N, &N);
-    FLOATING tmp = 1.0/sqrt(tp);
+    FLOATING tmp = 1.0 / sqrt(tp);
     N = vec_scale(tmp, &N);
 
     //vector for light L
@@ -55,7 +55,7 @@ color_t pln_lighting(light_t *light, ray_t *ray, xpnt_t *plnx)
     FLOATING c3 = .2;
 
     //attenuated lighting, calculated and added to rgb
-    FLOATING atten = 1.0/((c1 * (dL * dL)) + (c2 * dL) + c3);
+    FLOATING atten = 1.0 / ((c1 * (dL * dL)) + (c2 * dL) + c3);
     if(atten < 0.1) {
         atten = 0.1;
     }
@@ -89,12 +89,12 @@ color_t do_lighting(light_t *light, ray_t *ray, sphere_t *sph, FLOATING *t)
 
     //normalize V
     FLOATING tpr = vec_dot(&V, &V);
-    FLOATING tmpr = 1.0/sqrt(tpr);
+    FLOATING tmpr = 1.0 / sqrt(tpr);
     V = vec_scale(tmpr, &V);
 
     //vectors for normal, N
     PV_t normv = vec_scale(T, &V);
-    PV_t normorg = vec_sum(&ray->or, &normv);
+    PV_t normorg = vec_sum(&ray-> or, &normv);
 
     /*normalized vector N (difference
     of sphere center and norm origin)*/
@@ -102,12 +102,12 @@ color_t do_lighting(light_t *light, ray_t *ray, sphere_t *sph, FLOATING *t)
 
     //normalize the Normal
     FLOATING tp = vec_dot(&N, &N);
-    FLOATING tmp = 1.0/sqrt(tp);
+    FLOATING tmp = 1.0 / sqrt(tp);
     N = vec_scale(tmp, &N);
 
     //vector for light L
     PV_t litlen = vec_diff(&light->origin, &normorg);
-    PV_t L = vec_scale(1.0/T, &litlen);
+    PV_t L = vec_scale(1.0 / T, &litlen);
 
     /* diffuse lighting:
     cos theta = N dot L; angle between light and normal vectors
@@ -125,15 +125,15 @@ color_t do_lighting(light_t *light, ray_t *ray, sphere_t *sph, FLOATING *t)
     PV_t tempr = (vec_scale((2 * vec_dot(&L, &N)), &N));
     PV_t R = vec_diff(&L, &tempr);
     FLOATING tmp2 = vec_dot(&R, &R);
-    tmp2 = 1.0/(sqrt(tmp2));
+    tmp2 = 1.0 / (sqrt(tmp2));
     R = vec_scale(tmp2, &R);
 
     /* specular lighting
      cosine alpha = dot product of R and V
      add (cosine alpha^40) to rgb */
     FLOATING cos_alpha = vec_dot(&R, &V);
-    FLOATING n = 40.0/cos_alpha;
-    if((cos_alpha >0) && (cos_theta > 0)) {
+    FLOATING n = 40.0 / cos_alpha;
+    if((cos_alpha > 0) && (cos_theta > 0)) {
         RGB.r += pow(cos_alpha, n);
         RGB.g += pow(cos_alpha, n);
         RGB.b += pow(cos_alpha, n);

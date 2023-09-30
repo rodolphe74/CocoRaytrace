@@ -1,19 +1,20 @@
-/*  cc3demo.c - Demo of a CoCo 3 graphics program, written in C, that accesses the screen through bank switching.
+/*  bgtst.c - Demo of a CoCo 3 graphics program, written in C, that accesses the screen through bank switching.
 
     By Pierre Sarrazin <http://sarrazip.com/>.
     This file is in the public domain.
 
-    This program requires CC3GRAPH.DRV to be in drive 0 of the floppy disk
+    This program requires CC4GRAPH.DRV to be in drive 0 of the floppy disk
     that contains the binary of his program.
 
     To create your own CoCo 3 drawing program:
-    
+
     - Make a copy of this file under another name, in another directory.
     - Change the contents of mainDrawingFunction().
-    - Compile BGraph in its directory, to create the graphics driver (cc3graph.drv).
+    - Compile BGraph in its directory, to create the graphics driver (cc4graph.drv).
+    - cc4graph.drv is a copy of cc3graphdrv original driver adding setPx and getPx functions
     - Compile this file and link it with the BGraph library:
         cmoc -o yourprog.bin -I /the/bgragh/dir yourprog.c -L /the/bgragh/dir -lbgraph
-    - Put yourprog.bin and cc3graph.drv on the same floppy.
+    - Put yourprog.bin and cc4graph.drv on the same floppy.
     - Do LOADM"YOURPROG":EXEC on a CoCo 3.
 */
 
@@ -21,40 +22,21 @@
 #error "DRIVER_ENTRY must be defined to a C hex address (e.g., 0xC000)."
 #endif
 
-#include "bgraph-0.1.7/cc3graph.h"  /* BGraph */
+#include "bgraph-0.1.7/cc4graph.h"  /* BGraph */
 
 
-// RGB approximation of the 16 colors specified by the Berkeley Logo User Manual
-// for the SETPENCOLOR command:
-//	 0  black	 1  blue	 2  green	 3  cyan
-//	 4  red		 5  magenta	 6  yellow	 7 white
-//	 8  brown	 9  tan		10  forest	11  aqua
-//	12  salmon	13  purple	14  orange	15  grey
-//
-// const byte ucbLogoPaletteValues[16] =
-// {
-//      0,  9, 18, 27,
-//     36, 45, 54, 63,
-//     34, 53, 20, 29,
-//     60, 40, 38, 56,
-// };
-
-
-// simili DawnBringer
-const byte ucbLogoPaletteValues[16] =
-{
+// simili DawnBringer palette
+const byte ucbLogoPaletteValues[16] = {
     0, 4, 14, 7, 34, 20, 38, 56,
-	25, 53, 28, 23, 52, 27, 48, 63
+    25, 53, 28, 23, 52, 27, 48, 63
 };
 
 
 // Must be initialized by runGraphicsDriver().
-//
 GraphicsDriver *graphicsDriver;
 
 
 // Must not return.
-//
 void
 mainDrawingFunction(void)
 {
@@ -67,6 +49,7 @@ mainDrawingFunction(void)
 
     graphicsDriver->showGraphicsMode();
 
+    // display 16 colors
     unsigned char count = 0;
     for (int i = 0; i < 16; i++) {
         graphicsDriver->filledRectangle(i * 16, 0, i * 16 + 16, 16, i);
@@ -94,7 +77,7 @@ runGraphicsDriver(void)
     // The IRQ vector will then point to an ISR in the driver.
     //
     size_t size;
-    if (readDECBFile(DRIVER_ENTRY, 0, "CC3GRAPHDRV", 0x0600, &size) != 0)
+    if (readDECBFile(DRIVER_ENTRY, 0, "CC4GRAPHDRV", 0x0600, &size) != 0)
         return;  // failed to find or load the file
 
     // Call the code at the start of the driver. That is main() in cc3graph.c.
@@ -102,7 +85,7 @@ runGraphicsDriver(void)
     //
     // No local variable or function parameters can be used beyond the following call.
     //
-    graphicsDriver = ((GraphicsDriver *(*)(void)) DRIVER_ENTRY)();
+    graphicsDriver = ((GraphicsDriver * (*)(void)) DRIVER_ENTRY)();
 
     graphicsDriver->initDriver(mainDrawingFunction);
 }
@@ -112,8 +95,7 @@ int
 main()
 {
     initCoCoSupport();
-    if (!isCoCo3)
-    {
+    if (!isCoCo3) {
         printf("COCO 3 REQUIRED.\n");
         return 0;
     }

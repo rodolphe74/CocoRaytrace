@@ -1,19 +1,19 @@
-/*  cc3demo.c - Demo of a CoCo 3 graphics program, written in C, that accesses the screen through bank switching.
+/*  bgray.c - raytracing graphics program, written in C, that accesses the screen through bank switching.
 
     By Pierre Sarrazin <http://sarrazip.com/>.
     This file is in the public domain.
 
-    This program requires CC3GRAPH.DRV to be in drive 0 of the floppy disk
+    This program requires CC4GRAPH.DRV to be in drive 0 of the floppy disk
     that contains the binary of his program.
 
     To create your own CoCo 3 drawing program:
-    
+
     - Make a copy of this file under another name, in another directory.
     - Change the contents of mainDrawingFunction().
-    - Compile BGraph in its directory, to create the graphics driver (cc3graph.drv).
+    - Compile BGraph in its directory, to create the graphics driver (cc4graph.drv).
     - Compile this file and link it with the BGraph library:
         cmoc -o yourprog.bin -I /the/bgragh/dir yourprog.c -L /the/bgragh/dir -lbgraph
-    - Put yourprog.bin and cc3graph.drv on the same floppy.
+    - Put yourprog.bin and cc4graph.drv on the same floppy.
     - Do LOADM"YOURPROG":EXEC on a CoCo 3.
 */
 
@@ -27,10 +27,9 @@
 
 // simili DawnBringer palette
 // https://github.com/geoffb/dawnbringer-palettes
-const byte ucbLogoPaletteValues[16] =
-{
+const byte ucbLogoPaletteValues[16] = {
     0, 4, 14, 7, 34, 20, 38, 56,
-	25, 53, 28, 23, 52, 27, 48, 63
+    25, 53, 28, 23, 52, 27, 48, 63
 };
 
 
@@ -81,14 +80,14 @@ runGraphicsDriver(void)
     // if (readDECBFile(DRIVER_ENTRY, 0, "CC3GRAPHDRV", 0x0600, &size) != 0)
     //     return;  // failed to find or load the file
     if (readDECBFile(DRIVER_ENTRY, 0, "CC4GRAPHDRV", 0x0600, &size) != 0)
-    return;  // failed to find or load the file
+        return;  // failed to find or load the file
 
     // Call the code at the start of the driver. That is main() in cc3graph.c.
     // This call will obtain the address of 'theGraphicsDriver' in cc3graph.c.
     //
     // No local variable or function parameters can be used beyond the following call.
     //
-    graphicsDriver = ((GraphicsDriver *(*)(void)) DRIVER_ENTRY)();
+    graphicsDriver = ((GraphicsDriver * (*)(void)) DRIVER_ENTRY)();
 
     graphicsDriver->initDriver(mainDrawingFunction);
 }
@@ -98,8 +97,7 @@ int
 main()
 {
     initCoCoSupport();
-    if (!isCoCo3)
-    {
+    if (!isCoCo3) {
         printf("COCO 3 REQUIRED.\n");
         return 0;
     }

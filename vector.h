@@ -13,12 +13,12 @@
 #endif
 
 //vector structure
-typedef struct vector_type{
-   FLOATING x, y, z;
+typedef struct vector_type {
+    FLOATING x, y, z;
 } PV_t;
 
 
-//  prototypes for the vector functions  
+//  prototypes for the vector functions
 
 
 PV_t vec_sum(PV_t *, PV_t *);

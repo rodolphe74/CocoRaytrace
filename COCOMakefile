@@ -1,59 +1,51 @@
 CC=cmoc
 RM=rm -rf
+ASTYLE=astyle
 SAPFS=sapfs.exe
 IMGTOOL=imgtool.exe
 XROAR=xroar.exe -machine coco3 -tv-input rgb -kbd-translate -ram 512K
 
 CFLAGS= -O2 --coco -DCMOC_COMPILER -DPRINTF_FORMAT=0 -DDRIVER_ENTRY=0xC000 --org=2800
-# LDFLAGS= -lcmoc-crt-dgn -lcmoc-float-dgn  /home/rodoc/develop/projects/CocoRaytrace/bgraph-0.1.7/libbgraph.a
 LDFLAGS= -lcmoc-crt-dgn -lcmoc-float-dgn 
 
-# all: light.o sphere.o plane.o vector.o ray
 
-all: ray
-
-# raymake: vector.c plane.c sphere.c light.c ray.c
-	# gcc ray.c vector.c plane.c sphere.c light.c -lm
-
-# ray: light.o sphere.o plane.o vector.o ray.c
-	# $(CC) $(CFLAGS) -o$@.bin  $^ $(LDFLAGS)
-	# $(CC) -S $(CFLAGS)  $^
+all: bgtst bgray floattst
 
 bgray: light.o sphere.o plane.o vector.o ray.o errdiff.o bgray.c
 	$(CC) $(CFLAGS) -o$@.bin  $^ $(LDFLAGS)
-	$(CC) -S $(CFLAGS)  $^
+#	$(CC) -S $(CFLAGS)  $^
 
 errdiff.o: errdiff.c
 	$(CC) $(CFLAGS) -c $<
-	$(CC) -S $(CFLAGS) $<
+#	$(CC) -S $(CFLAGS) $<
 
 ray.o: ray.c
 	$(CC) $(CFLAGS) -c $<
-	$(CC) -S $(CFLAGS) $<
+#	$(CC) -S $(CFLAGS) $<
 
 light.o: light.c
 	$(CC) $(CFLAGS) -c $<
-	$(CC) -S $(CFLAGS) $<
+#	$(CC) -S $(CFLAGS) $<
 
 sphere.o: sphere.c
 	$(CC) $(CFLAGS) -c $<
-	$(CC) -S $(CFLAGS) $<
+#	$(CC) -S $(CFLAGS) $<
 
 plane.o: plane.c
 	$(CC) $(CFLAGS) -c $<
-	$(CC) -S $(CFLAGS) $<
+#	$(CC) -S $(CFLAGS) $<
 
 vector.o: vector.c
 	$(CC) $(CFLAGS) -c $<
-	$(CC) -S $(CFLAGS) $<
+#	$(CC) -S $(CFLAGS) $<
 
 floattst: floattst.c
 	$(CC) $(CFLAGS) -o$@.bin  $^ $(LDFLAGS)
-	$(CC) -S $(CFLAGS)  $^
+#	$(CC) -S $(CFLAGS)  $^
 
 bgtst: bgtst.c
 	$(CC) $(CFLAGS) -o$@.bin  $^ $(LDFLAGS)
-	$(CC) -S $(CFLAGS)  $^
+#	$(CC) -S $(CFLAGS)  $^
 
 floppy: bgtst bgray floattst
 	$(IMGTOOL) create coco_jvc_rsdos floppy.dsk
@@ -67,6 +59,10 @@ floppy: bgtst bgray floattst
 
 run: clean floppy
 	$(XROAR) -load-fd0 floppy.dsk
+
+format:
+	$(ASTYLE) --style=linux ray.c --pad-oper --pad-comma *.c *.h
+	$(RM) *.orig
 
 clean:
 	$(RM) *.o *.a *.bin

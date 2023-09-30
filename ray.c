@@ -15,51 +15,16 @@
 
 #include "type.h"
 #include "light.h"
+#ifdef DCMOC_COMPILER
 #include "errdiff.h"
+#endif
 
-// unsigned int counter = 0;
-
-// color_t palette[] = {
-// 	{2,2,2},
-// 	{74,2,0},
-// 	{74,74,172},
-// 	{74,74,74},
-// 	{172,74,2},
-// 	{74,172,2},
-// 	{253,74,2},
-// 	{172,172,172},
-// 	{2,172,253},
-// 	{235,172,74},
-// 	{74,172,172},
-// 	{74,253,74},
-// 	{253,172,2},
-// 	{2,253,253},
-// 	{172,172,2},
-// 	{253,253,253}
-// };
-
-// int findNearestColor(color_t c)
-// {
-// 	int minIndex = 0;
-// 	FLOATING minDistance = 400000.0;
-// 	FLOATING distance = 0;
-// 	for (unsigned char i = 0; i < 16; i++) {
-// 		distance = (
-// 			(c.r - palette[i].r) * (c.r - palette[i].r) +
-// 			(c.g - palette[i].g) * (c.g - palette[i].g) + 
-// 			(c.b - palette[i].r) * (c.b - palette[i].b) /*^0.5*/
-// 		);
-// 		if (distance < minDistance) {
-// 			minIndex = i;
-// 			minDistance = distance;
-// 		}
-// 	}
-// 	return minIndex;
-// }
-
+// Two lines RGB buffer used to dither before displaying to frame buffer
+#ifdef CMOC_COMPILER
 color_t twoLines[640];
 word pixelCounter = 0;
 byte startAtLine = 0;
+#endif
 
 #ifndef CMOC_COMPILER
 void makeppm(char *file, unsigned char *ppm, int wd, int ht)
@@ -73,7 +38,7 @@ void makeppm(char *file, unsigned char *ppm, int wd, int ht)
 
     /* from data ppm[] holds, 3 (size of pixel element),
     size of ppm[], to fp (the file pointer) */
-    fwrite(ppm, 3, wd*ht, fp);
+    fwrite(ppm, 3, wd * ht, fp);
 
     /*close the file*/
     fclose(fp);
@@ -81,35 +46,28 @@ void makeppm(char *file, unsigned char *ppm, int wd, int ht)
 #endif
 
 
-// int main()
+#ifndef CMOC_COMPILER
+int main()
+#else
 int ray(GraphicsDriver *gd)
+#endif
 {
-
-	// show current palette
-	// for (int i = 0; i < 16; i++) {
-    //     // gd->filledRectangle(i * 16, 0, i * 16 + 16, 16, i);
-
-    //     gd->setPx(i*16, 10, i);
-    // }
-	// return;
-
-    
-
     ray_t ray;
 
     //pixel dimensions for the output resolution of ppm image
+#ifdef CMOC_COMPILER
     int wid = 320;
     int hgt = 200;
-    FLOATING ratio = 480.0/400.0;
+    FLOATING ratio = 480.0 / 400.0;
+#else
+    int wid = 320;
+    int hgt = 240;
+    FLOATING ratio = 1.0;
+#endif
 
-    //allocate memory for spheres, initialize sphere data
-    // sphere_t *sph;
-    // int num = 2;
-    // sph = (sphere_t*)malloc(sizeof(sphere_t) * num);
-	sphere_t sph[2];
-	int num = 2;
-
-    // printf("sizeof sphere:%d\n", sizeof(sphere_t) * num);
+    // 2 spheres
+    sphere_t sph[2];
+    int num = 2;
 
     sph[0].ctr.x = 0.5;
     sph[0].ctr.y = 0.8;
@@ -118,7 +76,6 @@ int ray(GraphicsDriver *gd)
     sph[0].sclr.r = 0.3;
     sph[0].sclr.g = 0.0;
     sph[0].sclr.b = 0.0;
-
 
     sph[1].ctr.x = -0.5;
     sph[1].ctr.y = 0.15;
@@ -145,16 +102,15 @@ int ray(GraphicsDriver *gd)
     light.amount.g = 1.0;
     light.amount.b = 1.0;
 
-
+#ifndef CMOC_COMPILER
     //unsigned char array, height * width * 3(for r,g,b)
-	#ifndef CMOC_COMPILER
-    unsigned char ppm[3*wid*hgt];
-	#endif
+    unsigned char ppm[3 * wid * hgt];
+#endif
 
     //loop through columns and rows of the image
-    int x=0, y=0, lasty=1;
-    for(y=0; y<hgt; y++) {
-        for(x=0; x<wid; x++) {
+    int x = 0, y = 0, lasty = 1;
+    for(y = 0; y < hgt; y++) {
+        for(x = 0; x < wid; x++) {
 
             //initialize origin and direction of ray
             ray.or.x = 0;
@@ -163,8 +119,8 @@ int ray(GraphicsDriver *gd)
 
             //    ray.dir.x = -0.67 + x/480.0;
             //    ray.dir.y = 0.5 - y/480.0;
-            ray.dir.x = -0.67 + x/ (float)wid;
-            ray.dir.y = 0.5 - y/ ((float)wid / ratio);
+            ray.dir.x = -0.67 + x / (float)wid;
+            ray.dir.y = 0.5 - y / ((float)wid / ratio);
             ray.dir.z = 1.0;
 
             //initialize the 0.0 - 1.0 background color
@@ -203,8 +159,7 @@ int ray(GraphicsDriver *gd)
             //loop through spheres to determine closest t
             int i;
             int closest_i = -1;
-            for(i=0; i<2; i++) {
-
+            for(i = 0; i < 2; i++) {
 
                 if(intersect(&ray, &sph[i], &t, x, y) == 1) {
                     closest_i = i;
@@ -230,50 +185,42 @@ int ray(GraphicsDriver *gd)
             //(x+y*width)*3 = current pixel * rgb then
             //+0, +1 or +2 to access correct color in pixel.
             //rgb factor for each pixel multiplied by max color value 255
-			#ifndef CMOC_COMPILER
-            ppm[(x + y*wid)*3 + 0] = (unsigned char)(rgb.r*255.0);
-            ppm[(x + y*wid)*3 + 1] = (unsigned char)(rgb.g*255.0);
-            ppm[(x + y*wid)*3 + 2] = (unsigned char)(rgb.b*255.0);
-			#else
-			
-			#endif
-			// if ( (unsigned char)(rgb.r*255.0) > 128)
-			// 	gd->line(x, y, x, y, 1);
-			// else
-			// 	gd->line(x, y, x, y, 2);
+#ifndef CMOC_COMPILER
+            ppm[(x + y * wid) * 3 + 0] = (unsigned char)(rgb.r * 255.0);
+            ppm[(x + y * wid) * 3 + 1] = (unsigned char)(rgb.g * 255.0);
+            ppm[(x + y * wid) * 3 + 2] = (unsigned char)(rgb.b * 255.0);
+#else
+            // current RGB pixel color
+            color_t co = {(rgb.r * 255.0), (rgb.g * 255.0), (rgb.b * 255.0) };
 
-            // no ed
-			color_t co = {(rgb.r*255.0), (rgb.g*255.0), (rgb.b*255.0)};
-			// gd->line(x, y, x, y, findNearestColor(co, 0));
+            // to display undithered, uncomment next line
+            // gd->line(x, y, x, y, findNearestColor(co, 0));
 
-            // ed
+            // show current computed pixel
             gd->setPx(x, y, 6);
 
+            // feed dithering 2 lines buffer (need at least 2 lines to apply Floyd Steinberg)
             twoLines[pixelCounter++] = co;
-            // twoLines[pixelCounter++] = rgb;
-            // if (pixelCounter == 320) {
-            //     // move up last line
-            //     memcpy(twoLines, twoLines + 320 * sizeof(color_t), 320 * sizeof(color_t));
-            //     // one line
-            //     errorDiffusiongDither(gd, 0, y - 1, twoLines);
-            // }
             if (pixelCounter >= 640) {
                 // two lines
                 errorDiffusiongDither(gd, 0, y - 1, twoLines);
+
+                // move last line upstairs (will apply 1st line fs matrix on going up second line on next iteration)
                 pixelCounter = 320;
-                // memcpy(twoLines, twoLines + 320 * sizeof(color_t), 320 * sizeof(color_t));
                 for (int i = 320; i < 640; i++) {
                     twoLines[i - 320] = twoLines[i];
                 }
-
             }
+#endif
         }
+
     }
-//output the ppm, and free memory used for sphere
+
+
 #ifndef CMOC_COMPILER
+    //output the ppm, and free memory used for sphere
     makeppm("test1.ppm", ppm, wid, hgt);
 #endif
-    // free(sph);
 }
 
 
