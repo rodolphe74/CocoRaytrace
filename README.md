@@ -11,5 +11,5 @@ Porting of a [simple raytracer](https://github.com/WyattAutomation/Simple-Raytra
 
 # Now you are on the COCO side ([XRoar](https://www.6809.org.uk/xroar/))
 - LOADM "BGRAY"
+- REM WAIT 13 hours after next line
 - EXEC
-- REM WAIT 13 hours
