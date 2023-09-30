@@ -110,12 +110,12 @@ void errorDiffusiongDither(GraphicsDriver *gd, word x, byte y, color_t *co)
         quantError[1] = (short)currentColor.g - (short)closestMatch.g;
         quantError[2] = (short)currentColor.b - (short)closestMatch.b;
 
-        gd->setPx(i, y, cidx);
+        gd->setPx((word)i, (byte)y, (byte) cidx);
 
         // pixels[x + 1][y    ] := pixels[x + 1][y    ] + quant_error × 7 / 16
         if (i + 1 < 320) {
             screenPixel = applyError(co[i + 1], quantError, 0.4375);
-            gd->setPx(i + 1, y, findNearestColor(screenPixel, 0));
+            gd->setPx((word) i + 1, (byte) y, (byte) findNearestColor(screenPixel, 0));
 
             // char buf[32]; memset(buf, 0, 32);
             // sprintf(buf, " %f %f %f - %f %f %f",currentColor.r, currentColor.g, currentColor.b, screenPixel.r, screenPixel.g, screenPixel.b);
@@ -131,25 +131,23 @@ void errorDiffusiongDither(GraphicsDriver *gd, word x, byte y, color_t *co)
         // pixels[x - 1][y + 1] := pixels[x - 1][y + 1] + quant_error × 3 / 16
         if (i > 1) {
             screenPixel = applyError(co[320 + i - 1], quantError, 0.1875);
-            gd->setPx(i - 1, y + 1, findNearestColor(screenPixel, 0));
+            gd->setPx((word) i - 1, (byte) y + 1, (byte) findNearestColor(screenPixel, 0));
             co[320 + i - 1].r = screenPixel.r;
             co[320 + i - 1].g = screenPixel.g;
             co[320 + i - 1].b = screenPixel.b;
         }
 
-
         // pixels[x    ][y + 1] := pixels[x    ][y + 1] + quant_error × 5 / 16
         screenPixel = applyError(co[320 + i], quantError, 0.3125);
-        gd->setPx(x, y + 1, findNearestColor(screenPixel, 0));
+        gd->setPx((word) x, (byte)  y + 1, (byte)  findNearestColor(screenPixel, 0));
         co[320 + i].r = screenPixel.r;
         co[320 + i].g = screenPixel.g;
         co[320 + i].b = screenPixel.b;
 
-
         // pixels[x + 1][y + 1] := pixels[x + 1][y + 1] + quant_error × 1 / 16
         if (i + 1 < 320) {
             screenPixel = applyError(co[320 + i + 1], quantError, 0.0625);
-            gd->setPx(x + 1, y + 1, findNearestColor(screenPixel, 0));
+            gd->setPx((word) x + 1, (byte)  y + 1, (byte) findNearestColor(screenPixel, 0));
             co[320 + i + 1].r = screenPixel.r;
             co[320 + i + 1].g = screenPixel.g;
             co[320 + i + 1].b = screenPixel.b;

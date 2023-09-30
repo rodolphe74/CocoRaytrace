@@ -197,7 +197,7 @@ int ray(GraphicsDriver *gd)
             // gd->line(x, y, x, y, findNearestColor(co, 0));
 
             // show current computed pixel
-            gd->setPx(x, y, 6);
+            gd->setPx((word)x, (byte)y, 6);
 
             // feed dithering 2 lines buffer (need at least 2 lines to apply Floyd Steinberg)
             twoLines[pixelCounter++] = co;
@@ -221,6 +221,7 @@ int ray(GraphicsDriver *gd)
     //output the ppm, and free memory used for sphere
     makeppm("test1.ppm", ppm, wid, hgt);
 #endif
+    return 0;
 }
 
 
